@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Open Project Client</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" type="text/css" href="style/style.css" />
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="/script/html5slider.js">
+</script>
+
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+  <script>
+  $(function() {
+  
+    $( "#datepicker" ).datepicker({
+  dateFormat: "yy-mm-dd"
+});
+
+    $( "#datepicker" ).datepicker("option", "dateFormat");
+  });
+  </script>
+
+<script>
+	function sendCmd(cmd) {
+		$.ajax({
+			url: cmd,
+			success: function( data ) {
+				$("#state_line").text(data);
+			},
+			error: function () {
+				$("#state_line").text("Error");
+			}
+		});
+	}
+
+
+	function handleClick(cb) {
+		$.ajax({url:cb.name+cb.checked,})
+  		display("Clicked, new value = " + cb.checked);
+	}
+
+
+	function display(msg) {
+ 		var p = document.createElement('p');
+		p.innerHTML = msg;
+		document.body.appendChild(p);
+	}
+
+</script>
+</head>
+
+<div style="width:640px">
+
+
+<div class="polaroid" style="width:640px; padding-left=10px">
+<center>
+<h2>Open Project Client Préférences</h2><br/>
+</center>
+
+<strong>Client configuration</strong>
+
+<ul>
+<form autocomplete="off" action="/prefsValidation" method="post">
+	<abbr title="Adresse du serveur Open Project (sans / à la fin)">
+	Adresse du serveur OP</abbr> <input type="text" name="serverAddress" value="{{serverAddress}}" required><br/><br/>
+	<abbr title="La clé API se trouve sur la page personelle de chaque utilisateur">
+	Clé API</abbr>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <input type="text" name="apikey" value="{{apikey}}"><br/><br/>
+	
+	
+
+		
+		
+	<center>
+	<input class="button button-dark-blue" type="submit"  value="Submit"/>
+	<INPUT class="button button-dark-blue" TYPE=RESET VALUE="Reset">
+	</center>
+	
+</form>
+
+</ul>
+</div>
+<br/><br/>
+<center>
+
+
+
+{{hostname}}<br/>{{date}}</li>
+</center>
+</div>
+</body>
+</html>

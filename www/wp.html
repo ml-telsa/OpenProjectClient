@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Open Project Client</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel="stylesheet" type="text/css" href="style/style.css" />
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="/script/html5slider.js">
+</script>
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+<script>
+  $(function() {
+    $( "#dateAchatMat, #dateCdePCB, #dateCdePochoir, #dateOF" ).datepicker({
+  dateFormat: "yy-mm-dd"
+});
+    $( "#dateAchatMat, #dateCdePCB, #dateCdePochoir, #dateOF" ).datepicker("option", "dateFormat");
+  });
+</script>
+
+<script>
+	function sendCmd(cmd) {
+		$.ajax({
+			url: cmd,
+			success: function( data ) {
+				$("#state_line").text(data);
+			},
+			error: function () {
+				$("#state_line").text("Error");
+			}
+		});
+	}
+
+
+	function handleClick(cb) {
+		$.ajax({url:cb.name+cb.checked,})
+  		display("Clicked, new value = " + cb.checked);
+	}
+
+
+	function display(msg) {
+ 		var p = document.createElement('p');
+		p.innerHTML = msg;
+		document.body.appendChild(p);
+	}
+
+</script>
+
+<script>
+function requireAchatDate()
+{
+	document.getElementById('achatMat').onchange = function() {
+		if(document.getElementById('achatMat').checked)
+			document.getElementById("dateAchatMat").required = true;
+		else
+			document.getElementById("dateAchatMat").required = false;
+	};
+}
+
+function requireAchatDate()
+{
+		if(document.getElementById('achatMat').checked)
+			document.getElementById("dateAchatMat").required = true;
+		else
+			document.getElementById("dateAchatMat").required = false;
+}
+
+function requireCdePochoir()
+{
+		if(document.getElementById('cdePochoir').checked)
+			document.getElementById("dateCdePochoir").required = true;
+		else
+			document.getElementById("dateCdePochoir").required = false;
+}
+
+function requireCdePCB()
+{
+		if(document.getElementById('cdePCB').checked)
+			document.getElementById("dateCdePCB").required = true;
+		else
+			document.getElementById("dateCdePCB").required = false;
+}
+</script>
+</head>
+
+<div style="width:640px">
+<div class="polaroid" style="width:640px; padding-left=10px">
+<center><h2>Création d'ordre de fabrication</h2></center>
+
+<ul>
+<form autocomplete="off" action="/createOF" method="post">
+
+	<strong>Informations de base</strong><br/><br/>
+	
+	Numéro d'OF &nbsp&nbsp&nbsp&nbsp<input type="text" name="numeroOF" required><br/><br/>
+	Nom du client &nbsp&nbsp <select required style="width:400px" name="nomClient" id="nomClient" >
+		<option value="" selected>Please select...</option>
+		{% for customer in customerListWp %}
+		<option value="{{customer['href']}}">{{customer['title']}}</option>
+		{%end%}
+		</select><br/><br/>
+	
+	<abbr title="L'Identifiant du project se trouve sur la page Informations dans les paramètres du projet concerné dans OpenProject (respecter la casse)">
+	ID du projet</abbr> &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <input type="text" name="projectID" required><br/><br/>
+	Quantité totale &nbsp <input type="text" name="totalQty" width="600px" required><br/><br/>
+	Description &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp <textarea name="description" id="description" style="height:110px"></textarea><br/><br/><br/><br/>
+	Date d'échéance OF <input type="date" name="dateOF" id="dateOF" required>
+	Livraison assignée à <select name="assigneeLivraison" >
+		<option value="{{defaultUserLivraison['_links']['self']['href']}}" selected>{{defaultUserLivraison['name']}}</option>
+		{% for user in userListWp['_embedded']['elements'] %}
+		<option value="{{user['_links']['self']['href']}}">{{user['name']}}</option>
+		{%end%}
+		</select><br/><br/><br/><br/>
+		
+	<strong>Options</strong><br/><br/>
+	<span class="" >
+		<input type='hidden' value="0" name="achatMat">
+		<input type="checkbox" name="achatMat" id="achatMat" value="1" onchange="requireAchatDate();" />
+		<label for="achatMat" data-on="On" data-off="Off">Achat matériel</label>
+		&nbsp&nbspAssigné à <select name="assigneeAchatMat" >
+		<option value="{{defaultUserComposant['_links']['self']['href']}}" selected>{{defaultUserComposant['name']}}</option>
+		{% for user in userListWp['_embedded']['elements'] %}
+		<option value="{{user['_links']['self']['href']}}">{{user['name']}}</option>
+		{%end%}
+		</select>
+		échéance <input type="date" name="dateAchatMat" id="dateAchatMat" ><br/><br/>
+	</span><br/><br/>
+	
+	<span class="" >
+		<input type='hidden' value="0" name="cdePochoir">
+		<input type="checkbox" name="cdePochoir" id="cdePochoir" value="1"  onchange="requireCdePochoir();"/>
+		<label for="cdePochoir" data-on="On" data-off="Off">Commande pochoir</label>
+		&nbsp&nbspAssigné à <select name="assigneeAchatPochoir" >
+		<option value="{{defaultUserPochoir['_links']['self']['href']}}" selected>{{defaultUserPochoir['name']}}</option>
+		{% for user in userListWp['_embedded']['elements'] %}
+		<option value="{{user['_links']['self']['href']}}">{{user['name']}}</option>
+		{%end%}
+		</select>
+		échéance <input type="date" name="dateCdePochoir" id="dateCdePochoir" width="200px"><br/><br/>
+	</span><br/><br/>
+	
+	
+	<span class="" >
+		<input type='hidden' value="0" name="cdePCB">
+		<input type="checkbox" name="cdePCB" id="cdePCB" value="1"  onchange="requireCdePCB();"/>
+		<label for="cdePCB" data-on="On" data-off="Off">Commande PCBs</label>
+		&nbsp&nbspAssigné à <select name="assigneeAchatPCB" >
+		<option value="{{defaultUserPCB['_links']['self']['href']}}" selected>{{defaultUserPCB['name']}}</option>
+		{% for user in userListWp['_embedded']['elements'] %}
+		<option value="{{user['_links']['self']['href']}}">{{user['name']}}</option>
+		{%end%}
+		</select>
+		échéance <input type="date" name="dateCdePCB" id="dateCdePCB" width="200px"><br/><br/>
+	</span><br/><br/>
+	
+<center>
+	<input class="button button-dark-blue" type="submit"  value="Submit"/>
+	<INPUT class="button button-dark-blue" TYPE=RESET VALUE="Reset">
+</center>
+	
+</form>
+
+</ul>
+</div>
+<br/><br/>
+<center>
+
+
+
+{{hostname}}<br/>{{date}}</li>
+</center>
+</div>
+</body>
+</html>
